@@ -83,11 +83,17 @@ function loadPhotos(){
   let c=localStorage.getItem('chinPhoto'); if(c && c.length>100){let im=document.getElementById('preview2'); im.src=c; document.getElementById('chinBox').classList.add('has-photo');}
 }
 function savePosts(){
-  let arr=[]; document.querySelectorAll('.post').forEach(p=>{
-    let img=p.querySelector('.post-photo img');
-    arr.push({text:p.querySelector('.new').innerHTML,photo:img?img.src:"",date:p.querySelector('.post-date').textContent,likes:parseInt(p.querySelector('.like-count').dataset.n||0),liked:p.querySelector('.like-btn').classList.contains('liked'),cmts:[...p.querySelectorAll('.cmt-list div')].map(d=>d.textContent)});
-  });
-  try{localStorage.setItem('robertPosts',JSON.stringify(arr));}catch(e){}
+ let arr=[]; document.querySelectorAll('.post').forEach(p=>{
+  let img=p.querySelector('.post-photo img');
+  arr.push({text:p.querySelector('.new').innerHTML,photo:img?img.src:"",date:p.querySelector('.post-date').textContent,likes:parseInt(p.querySelector('.like-count').dataset.n||0),comments:[]});
+ });
+ try{localStorage.setItem('robertPosts',JSON.stringify(arr));}catch(e){}
+ if(window.db){
+  window.db.collection('robertPosts').get().then(function(snap){
+   snap.forEach(function(doc){ doc.ref.delete(); });
+   arr.forEach(function(d){ window.db.collection('robertPosts').add(d); });
+  }).catch(function(){});
+ }
 }
 function loadPosts(){
  if(window.db){
