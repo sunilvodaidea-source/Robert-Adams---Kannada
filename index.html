@@ -96,16 +96,26 @@ function savePosts(){
  }
 }
 function loadPosts(){
- if(window.db){
-  window.db.collection('robertPosts').get().then(function(snap){
-   document.getElementById('posts').innerHTML="";
-   if(!snap.empty){ snap.forEach(function(doc){ createPost(doc.data()); }); return; }
-   loadLocalPosts();
-  }).catch(function(){ loadLocalPosts(); });
-  return;
- }
- loadLocalPosts();
-}
+  let raw=localStorage.getItem('robertPosts');
+  if(raw){
+    try{
+      let arr=JSON.parse(raw);
+      if(arr.length>0){
+        document.getElementById('posts').innerHTML="";
+        arr.forEach(function(d){ createPost(d); });
+        return;
+      }
+    }catch(e){}
+  }
+  if(window.db){
+    window.db.collection('robertPosts').get().then(function(snap){
+      document.getElementById('posts').innerHTML="";
+      if(!snap.empty){ snap.forEach(function(doc){ createPost(doc.data()); }); return; }
+      loadLocalPosts();
+    }).catch(function(){ loadLocalPosts(); });
+    return;
+  }
+  loadLocalPosts();
 function loadLocalPosts(){
  let raw=localStorage.getItem('robertPosts');
  document.getElementById('posts').innerHTML="";
