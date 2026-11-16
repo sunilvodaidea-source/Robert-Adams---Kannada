@@ -90,10 +90,21 @@ function savePosts(){
   try{localStorage.setItem('robertPosts',JSON.stringify(arr));}catch(e){}
 }
 function loadPosts(){
-  let raw=localStorage.getItem('robertPosts');
-  document.getElementById('posts').innerHTML="";
-  if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); return;}}catch(e){}}
-  createPost(null);
+ if(window.db){
+  window.db.collection('robertPosts').get().then(function(snap){
+   document.getElementById('posts').innerHTML="";
+   if(!snap.empty){ snap.forEach(function(doc){ createPost(doc.data()); }); return; }
+   loadLocalPosts();
+  }).catch(function(){ loadLocalPosts(); });
+  return;
+ }
+ loadLocalPosts();
+}
+function loadLocalPosts(){
+ let raw=localStorage.getItem('robertPosts');
+ document.getElementById('posts').innerHTML="";
+ if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); return;}}catch(e){}}
+ createPost(null);
 }
 function createPost(data){
   let d=data||{text:"",photo:"",date:"📅 "+nowStr(),likes:0,liked:false,cmts:[]};
@@ -153,6 +164,7 @@ loadPhotos(); loadPosts();
    firebase.initializeApp(firebaseConfig);
    window.db=firebase.firestore();
    console.log("Firebase Connected!");
+    setTimeout(function(){ loadPosts(); },800);
   };
  };
  // --- FIREBASE END ---
