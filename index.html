@@ -144,6 +144,18 @@ document.getElementById('myphoto').onchange=function(e){compressImage(e.target.f
 document.getElementById('myphoto2').onchange=function(e){compressImage(e.target.files[0],function(url){let im=document.getElementById('preview2'); im.src=url; document.getElementById('chinBox').classList.add('has-photo'); savePhotos();});};
 document.getElementById('adminInput').addEventListener('keydown',function(e){if(e.key==='Enter') checkAdmin();});
 loadPhotos(); loadPosts();
+  // --- FIREBASE START ---
+ var fb1=document.createElement('script'); fb1.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js'; document.head.appendChild(fb1);
+ fb1.onload=function(){
+  var fb2=document.createElement('script'); fb2.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js'; document.head.appendChild(fb2);
+  fb2.onload=function(){
+   var firebaseConfig={apiKey:"AIzaSyAizg-jD6qSyn-OPcrmnDCR3hjvhHevLw",authDomain:"robert-adams-in-kannada.firebaseapp.com",projectId:"robert-adams-in-kannada",storageBucket:"robert-adams-in-kannada.firebasestorage.app",messagingSenderId:"813875619619",appId:"1:813875619619:web:acfa6e8c2840565eb60e96",measurementId:"G-L6ENESK2FB"};
+   firebase.initializeApp(firebaseConfig);
+   window.db=firebase.firestore();
+   console.log("Firebase Connected!");
+  };
+ };
+ // --- FIREBASE END ---
 </script>
 </body>
 </html>
