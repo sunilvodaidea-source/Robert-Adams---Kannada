@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#fff;color:#202122}
+.topbar{display:flex;justify-content:flex-end;padding:10px 14px;background:#f5f5f5;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:100}
+.topbar button{background:#1a4fc0;color:white;border:0;padding:7px 12px;cursor:pointer;border-radius:20px}
+.topbar button.unlocked{background:#0a7a3d}
+.main{display:flex;max-width:1360px;margin:auto;gap:14px;padding:12px 8px;align-items:flex-start}
+.left{width:220px;flex-shrink:0;font-size:14px;line-height:1.8;text-align:center;display:flex;flex-direction:column;gap:10px}
+.center{flex:1;min-width:0}.center h2{font-size:28px;margin:0 0 14px;color:#000;border:0}
+.right{width:290px;flex-shrink:0;border:1px solid #ddd;height:fit-content}
+.r-head{text-align:center;padding:9px;font-weight:bold;font-size:15px;background:#f9e8a8}
+.photo-box{background:#ededed;height:270px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative}
+.photo-box img{width:100%;height:100%;object-fit:cover;display:none}
+.photo-box.has-photo img{display:block}
+.photo-box .add-txt{font-size:28px;color:#888}
+.photo-box.has-photo .add-txt{display:none}
+.r-table{width:100%;font-size:13.5px;border-collapse:collapse}.r-table td{padding:8px;vertical-align:top}
+.editor-box{border:1px solid #ddd;padding:12px 4px;background:#f9f9f9;text-align:center}
+.my-photo-box{width:110px;height:110px;margin:10px auto 0;border-radius:50%;background:#e8e8e8;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;position:relative}
+.my-photo-box img{width:100%;height:100%;object-fit:cover;display:none}
+.my-photo-box.has-photo img{display:block}
+.my-photo-box .add-txt{font-size:28px;color:#888}
+.my-photo-box.has-photo .add-txt{display:none}
+.new{border:1px dashed #aaa;padding:14px;min-height:100px;font-size:17px;line-height:1.9;outline:none}
+.new:empty:before{content:"ಇಲ್ಲಿ ಬರೆಯಿರಿ...";color:#999}
+.post{border:1px solid #ddd;margin-bottom:20px;padding:0;background:#fff}
+.post .new{border:0;border-bottom:1px solid #eee}
+.post-date{font-size:12.5px;color:#666;padding:6px 14px 2px}
+.post-photo img{width:100%;display:block;max-height:500px;object-fit:cover}
+.post-photo:empty{display:none}
+.post-photo-btns{display:flex;padding:8px 14px;gap:8px;flex-wrap:wrap}
+.post-photo-btns button{background:#f0f2f5;border:0;padding:7px 12px;border-radius:20px;cursor:pointer;font-size:13px;color:#1a4fc0}
+.post-del{display:none;justify-content:flex-end;padding:4px 10px;gap:8px}
+body.editing .post-del{display:flex}
+.post-del button{background:#1a4fc0;color:#fff;padding:6px 14px;border:1px solid #1a4fc0;border-radius:20px;cursor:pointer;font-size:13px;font-weight:bold}
+.like-row{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #eee}
+.like-btn{background:#f0f2f5;border:0;padding:7px 14px;border-radius:20px;cursor:pointer;font-size:14px}
+.like-btn.liked{background:#dbeafe;color:#1a4fc0;font-weight:bold}
+.cmt-list{padding:10px 14px;font-size:14px;line-height:1.7}
+.cmt-list div{padding:6px 0;border-bottom:1px solid #f0f0f0}
+.cmt-box{display:flex;gap:8px;padding:10px 14px;background:#f9f9f9}
+.cmt-box input{flex:1;padding:8px;border:1px solid #ccc;border-radius:20px;font-size:14px}
+.cmt-box button{background:#1a4fc0;color:#fff;border:0;padding:8px 14px;border-radius:20px;cursor:pointer}
+.plus-btn{width:100%;height:52px;border-radius:10px;background:#1a4fc0;color:#fff;border:0;font-size:22px;cursor:pointer;display:block;margin:10px auto}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#fff;width:90%;max-width:420px;padding:20px;border-radius:12px;text-align:center}
+.modal-box input{width:100%;padding:12px;border:1px solid #1a4fc0;border-radius:8px;font-size:16px;outline:none;margin:10px 0 18px}
+.modal-btns{display:flex;justify-content:flex-end;gap:10px}
+.modal-btns button{padding:9px 18px;border-radius:8px;border:0;cursor:pointer;font-size:15px}
+.btn-ok{background:#1a4fc0;color:#fff}
+.btn-cancel{background:#eee;color:#000}
+@media(max-width:800px){.main{flex-direction:column}.left,.right{width:100%}}
+</style>
+</head>
+<body class="locked">
+<div class="topbar"><span><button id="loginBtn" onclick="toggleEdit()">🔑</button></span></div>
+<div class="main">
+<div class="left">
+<div class="editor-box"><div>ವೆಬ್ ಪೇಜ್ ಸಂಪಾದಕರು :</div><div style="font-weight:bold">ಚಿನ್ವತ</div><div style="font-size:14px;color:#1a4fc0">sunilvodaidea@gmail.com</div>
+<div class="my-photo-box" id="chinBox" onclick="pickPhoto('myphoto2')"><span class="add-txt">+</span><img id="preview2"></div><input type="file" id="myphoto2" accept="image/*" hidden></div></div>
+<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button></div>
+<div class="right"><div class="r-head">ರಾಬರ್ಟ್ ಆಡಮ್ಸ್</div>
+<div class="photo-box" id="robertBox" onclick="pickPhoto('myphoto')"><span class="add-txt">+</span><img id="preview"></div><input type="file" id="myphoto" accept="image/*" hidden>
+<div class="r-head">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ</div>
+<table class="r-table"><tr><td>ಜನನ</td><td>ಜನವರಿ 21, 1928<br>ನ್ಯೂಯಾರ್ಕ್ ನಗರ, ಯು.ಎಸ್.</td></tr><tr><td>ಮರಣ</td><td>ಮಾರ್ಚ್ 2, 1997 (69)<br>ಸೆಡೋನಾ, ಅರಿಜೋನಾ</td></tr><tr><td>ಗುರು</td><td>ರಮಣ ಮಹರ್ಷಿ</td></tr></table></div></div>
+
+<div class="modal" id="adminModal"><div class="modal-box"><input id="adminInput" placeholder=""><div class="modal-btns"><button class="btn-ok" onclick="checkAdmin()">OK</button><button class="btn-cancel" onclick="closeAdmin()">Cancel</button></div></div></div>
+
+<script>
+const EDITOR_MAIL="sunilvodaidea@gmail.com";
+let isEditing=false;
+let pendingPhoto=null;
+function nowStr(){return new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});}
+function savePhotos(){try{localStorage.setItem('robertPhoto',document.getElementById('preview').src);localStorage.setItem('chinPhoto',document.getElementById('preview2').src);}catch(e){}}
+function loadPhotos(){
+  let r=localStorage.getItem('robertPhoto'); if(r && r.length>100){let im=document.getElementById('preview'); im.src=r; document.getElementById('robertBox').classList.add('has-photo');}
+  let c=localStorage.getItem('chinPhoto'); if(c && c.length>100){let im=document.getElementById('preview2'); im.src=c; document.getElementById('chinBox').classList.add('has-photo');}
+}
+function savePosts(){
+  let arr=[]; document.querySelectorAll('.post').forEach(p=>{
+    let img=p.querySelector('.post-photo img');
+    arr.push({text:p.querySelector('.new').innerHTML,photo:img?img.src:"",date:p.querySelector('.post-date').textContent,likes:parseInt(p.querySelector('.like-count').dataset.n||0),liked:p.querySelector('.like-btn').classList.contains('liked'),cmts:[...p.querySelectorAll('.cmt-list div')].map(d=>d.textContent)});
+  });
+  try{localStorage.setItem('robertPosts',JSON.stringify(arr));}catch(e){}
+}
+function loadPosts(){
+  let raw=localStorage.getItem('robertPosts');
+  document.getElementById('posts').innerHTML="";
+  if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); return;}}catch(e){}}
+  createPost(null);
+}
+function createPost(data){
+  let d=data||{text:"",photo:"",date:"📅 "+nowStr(),likes:0,liked:false,cmts:[]};
+  let div=document.createElement('div'); div.className='post';
+  div.innerHTML='<div class="post-del"><button onclick="deletePost(this)">Delete Post</button></div><div class="new" contenteditable="true"></div><div class="post-date"></div><div class="post-photo"></div><div class="post-photo-btns"><button onclick="pickPostPhoto(this)">📷 Add Photo</button><button onclick="removePostPhoto(this)">Delete Photo</button></div><input type="file" accept="image/*" hidden class="post-file"><div class="like-row"><button class="like-btn" onclick="likeThis(this)">👍 Like</button><span class="like-count" data-n="0">0</span></div><div class="cmt-list"></div><div class="cmt-box"><input placeholder="Comment..."><button onclick="addCmt(this)">➤</button></div>';
+  div.querySelector('.new').innerHTML=d.text; div.querySelector('.post-date').textContent=d.date;
+  if(d.photo){let im=document.createElement('img'); im.src=d.photo; div.querySelector('.post-photo').appendChild(im);}
+  let lb=div.querySelector('.like-btn'); if(d.liked) lb.classList.add('liked');
+  let lc=div.querySelector('.like-count'); lc.dataset.n=d.likes; lc.textContent=d.likes;
+  let cl=div.querySelector('.cmt-list'); d.cmts.forEach(t=>{let x=document.createElement('div'); x.textContent=t; cl.appendChild(x);});
+  div.querySelector('.new').addEventListener('input',savePosts);
+  div.querySelector('.post-file').onchange=function(e){compressImage(e.target.files[0],function(url){let box=div.querySelector('.post-photo'); box.innerHTML=""; let im=document.createElement('img'); im.src=url; box.appendChild(im); savePosts();});};
+  document.getElementById('posts').appendChild(div);
+  return div;
+}
+function deletePost(btn){
+  if(!isEditing){openAdmin();return;}
+  if(!confirm("Delete Post ಮಾಡಲಾ?"))return; btn.closest('.post').remove(); savePosts();
+}
+function pickPostPhoto(btn){btn.closest('.post').querySelector('.post-file').click();}
+function removePostPhoto(btn){if(!confirm("Photo Delete ಮಾಡಲಾ?"))return; btn.closest('.post').querySelector('.post-photo').innerHTML=""; savePosts();}
+function addPost(){let el=createPost(null); savePosts(); el.scrollIntoView({behavior:'smooth'}); el.querySelector('.new').focus();}
+function likeThis(btn){let p=btn.closest('.post'); let lc=p.querySelector('.like-count'); let n=parseInt(lc.dataset.n||0); if(btn.classList.contains('liked')){btn.classList.remove('liked'); n--;}else{btn.classList.add('liked'); n++;} lc.dataset.n=n; lc.textContent=n; savePosts();}
+function addCmt(btn){let p=btn.closest('.post'); let inp=p.querySelector('.cmt-box input'); let v=inp.value.trim(); if(!v)return; let x=document.createElement('div'); x.textContent=v; p.querySelector('.cmt-list').appendChild(x); inp.value=""; savePosts();}
+function openAdmin(){
+  document.getElementById('adminInput').value="";
+  document.getElementById('adminModal').classList.add('open');
+  setTimeout(()=>document.getElementById('adminInput').focus(),100);
+}
+function toggleEdit(){
+  if(isEditing){ if(confirm("Logout ಮಾಡಲಾ?")) setLock(true); return;}
+  pendingPhoto=null; openAdmin();
+}
+function closeAdmin(){pendingPhoto=null; document.getElementById('adminModal').classList.remove('open');}
+function checkAdmin(){
+  let v=document.getElementById('adminInput').value.trim().toLowerCase();
+  if(v!==EDITOR_MAIL){alert("Wrong"); return;}
+  closeAdmin(); setLock(false);
+  if(pendingPhoto){let id=pendingPhoto; pendingPhoto=null; setTimeout(()=>document.getElementById(id).click(),100);}
+}
+function setLock(lock){isEditing=!lock; document.body.className=lock?"locked":"editing"; document.getElementById('loginBtn').innerText=lock?"🔑":"🔓"; document.getElementById('loginBtn').className=lock?"":"unlocked";}
+function pickPhoto(id){
+  if(!isEditing){ pendingPhoto=id; openAdmin(); return; }
+  document.getElementById(id).click();
+}
+function compressImage(file,cb){if(!file)return; let r=new FileReader(); r.onload=function(e){let img=new Image(); img.onload=function(){let c=document.createElement('canvas'); let max=800; let w=img.width,h=img.height; if(w>max){h=h*max/w; w=max;} c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); cb(c.toDataURL('image/jpeg',0.82));}; img.src=e.target.result;}; r.readAsDataURL(file);}
+document.getElementById('myphoto').onchange=function(e){compressImage(e.target.files[0],function(url){let im=document.getElementById('preview'); im.src=url; document.getElementById('robertBox').classList.add('has-photo'); savePhotos();});};
+document.getElementById('myphoto2').onchange=function(e){compressImage(e.target.files[0],function(url){let im=document.getElementById('preview2'); im.src=url; document.getElementById('chinBox').classList.add('has-photo'); savePhotos();});};
+document.getElementById('adminInput').addEventListener('keydown',function(e){if(e.key==='Enter') checkAdmin();});
+loadPhotos(); loadPosts();
+</script>
+</body>
+</html>
