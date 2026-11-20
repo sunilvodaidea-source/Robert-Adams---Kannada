@@ -58,7 +58,16 @@ body.editing .admin-stats{display:block}
 .btn-ok{background:#1a4fc0;color:#fff}
 .btn-cancel{background:#eee;color:#000}
 #posts{max-height:calc(100vh - 110px);overflow-y:auto;padding-right:4px}
-@media(max-width:800px){.main{flex-direction:column}.left,.right{width:100%}#posts{max-height:none;overflow:visible}}
+@media(max-width:800px){
+  .topbar{position:fixed;top:0;left:0;right:0}
+  body{padding-top:44px}
+  .main{flex-direction:column}
+  .left,.right{width:100%}
+  .center{width:100%;padding-top:54px}
+  .center h2{position:fixed;top:44px;left:0;right:0;z-index:99;background:#fff;margin:0;padding:12px 12px 10px;font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  #posts{max-height:none;overflow:visible;padding-right:0}
+  .post{max-height:none;overflow:visible}
+}
 </style>
 </head>
 <body class="locked">
