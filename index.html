@@ -49,6 +49,8 @@ body.editing .post-actions{display:flex}
 body.locked .plus-btn{display:none}
 .admin-stats{display:none;text-align:center;background:#eef3ff;border:1px solid #c5d6ff;padding:10px;border-radius:10px;font-size:14px;font-weight:bold;color:#1a4fc0;margin:10px auto;line-height:1.8}
 body.editing .admin-stats{display:block}
+.dup-btn{display:none;width:100%;padding:10px;background:#ff9800;color:#fff;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin:5px auto;font-size:14px}
+body.editing .dup-btn{display:block}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center}
 .modal.open{display:flex}
 .modal-box{background:#fff;width:90%;max-width:420px;padding:20px;border-radius:12px;text-align:center}
@@ -59,12 +61,11 @@ body.editing .admin-stats{display:block}
 .btn-cancel{background:#eee;color:#000}
 #posts{max-height:calc(100vh - 110px);overflow-y:auto;padding-right:4px}
 @media(max-width:800px){
-  .topbar{position:fixed;top:0;left:0;right:0}
-  body{padding-top:44px}
-  .main{flex-direction:column}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:101}
+  .main{flex-direction:column;padding-top:var(--m-head,100px)}
   .left,.right{width:100%}
-  .center{width:100%;padding-top:54px}
-  .center h2{position:fixed;top:44px;left:0;right:0;z-index:99;background:#fff;margin:0;padding:12px 12px 10px;font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+  .center{width:100%}
+  .center h2{position:fixed;top:var(--m-top,44px);left:0;right:0;z-index:100;background:#fff;margin:0;padding:12px 12px 10px;font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
   #posts{max-height:none;overflow:visible;padding-right:0}
   .post{max-height:none;overflow:visible}
 }
@@ -76,7 +77,7 @@ body.editing .admin-stats{display:block}
 <div class="left">
 <div class="editor-box"><div>ವೆಬ್ ಪೇಜ್ ಸಂಪಾದಕರು :</div><div style="font-weight:bold">ಚಿನ್ವತ</div><div style="font-size:14px;color:#1a4fc0">sunilvodaidea@gmail.com</div>
 <div class="my-photo-box" id="chinBox" onclick="pickPhoto('myphoto2')"><span class="add-txt">+</span><img id="preview2"></div><input type="file" id="myphoto2" accept="image/*" hidden></div></div>
-<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button><div class="admin-stats" id="adminStats">Total Posts: 0 | Total Data Used: 0 KB</div></div>
+<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button><div class="admin-stats" id="adminStats">Total Posts: 0 | Total Data Used: 0 KB</div><button class="dup-btn" onclick="findDup()">🔍 Duplicate Check ಮಾಡಿ</button></div>
 <div class="right"><div class="r-head">ರಾಬರ್ಟ್ ಆಡಮ್ಸ್</div>
 <div class="photo-box" id="robertBox" onclick="pickPhoto('myphoto')"><span class="add-txt">+</span><img id="preview"></div><input type="file" id="myphoto" accept="image/*" hidden>
 <div class="r-head">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ</div>
@@ -88,6 +89,19 @@ body.editing .admin-stats{display:block}
 const EDITOR_MAIL="sunilvodaidea@gmail.com";
 let isEditing=false;
 let pendingPhoto=null;
+let isLoading=true;
+function fixMobileHeader(){
+  if(window.innerWidth>800) return;
+  var top=document.querySelector('.topbar');
+  var h=document.querySelector('.center h2');
+  if(!top||!h) return;
+  var th=top.offsetHeight;
+  h.style.top=th+'px';
+  document.documentElement.style.setProperty('--m-top',th+'px');
+  document.documentElement.style.setProperty('--m-head',(th+h.offsetHeight+12)+'px');
+}
+window.addEventListener('load',fixMobileHeader);
+window.addEventListener('resize',fixMobileHeader);
 function nowStr(){return new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});}
 function updateAdminStats(){
   let posts=document.querySelectorAll('.post');
@@ -102,12 +116,23 @@ function updateAdminStats(){
   let el=document.getElementById('adminStats');
   if(el) el.textContent="Total Posts: "+posts.length+" | Total Data Used: "+totalKB.toFixed(1)+" KB";
 }
+function findDup(){
+  let seen={}; let dup=0;
+  document.querySelectorAll('.post').forEach(p=>{
+    let t=(p.querySelector('.new')?.innerText||"").trim().substring(0,120);
+    p.style.border="1px solid #ddd";
+    if(t && seen[t]){ p.style.border="3px solid red"; seen[t].style.border="3px solid red"; dup++; }
+    else if(t) seen[t]=p;
+  });
+  alert(dup ? dup+" Duplicate ಸಿಕ್ತು! ಕೆಂಪು ಬಾರ್ಡರ್ ಇರೋದು ಡೂಪ್ಲಿಕೇಟ್!" : "ಡೂಪ್ಲಿಕೇಟ್ ಇಲ್ಲ ದೊರೆ! ಎಲ್ಲಾ ಬೇರೆ ಬೇರೆ!");
+}
 function savePhotos(){try{localStorage.setItem('robertPhoto',document.getElementById('preview').src);localStorage.setItem('chinPhoto',document.getElementById('preview2').src);}catch(e){}}
 function loadPhotos(){
   let r=localStorage.getItem('robertPhoto'); if(r && r.length>100){let im=document.getElementById('preview'); im.src=r; document.getElementById('robertBox').classList.add('has-photo');}
   let c=localStorage.getItem('chinPhoto'); if(c && c.length>100){let im=document.getElementById('preview2'); im.src=c; document.getElementById('chinBox').classList.add('has-photo');}
 }
 function savePosts(){
+  if(isLoading) return;
   let arr=[]; document.querySelectorAll('.post').forEach(p=>{
     let img=p.querySelector('.post-photo img');
     arr.push({text:p.querySelector('.new').innerHTML,photo:img?img.src:"",date:p.querySelector('.post-date')?p.querySelector('.post-date').textContent:"",likes:parseInt(p.querySelector('.like-count')?.dataset.n||0),liked:p.querySelector('.like-btn')?.classList.contains('liked')||false,cmts:[...p.querySelectorAll('.cmt-list div')].map(x=>x.textContent)});
@@ -123,21 +148,23 @@ function savePosts(){
   }
 }
 function loadPosts(){
+  isLoading=true;
   document.getElementById('posts').innerHTML = "";
   if(!window.db){ loadLocalPosts(); return; }
   window.db.collection('robertPosts').get().then(function(snap){
-    if(snap.empty){ createPost(null); return; }
+    if(snap.empty){ createPost(null); isLoading=false; return; }
     snap.forEach(function(doc){
       createPost(doc.data());
     });
     updateAdminStats();
+    setTimeout(function(){isLoading=false; fixMobileHeader();},1000);
   }).catch(function(){ loadLocalPosts(); });
 }
 function loadLocalPosts(){
  let raw=localStorage.getItem('robertPosts');
  document.getElementById('posts').innerHTML="";
- if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); updateAdminStats(); return;}}catch(e){}}
- createPost(null); updateAdminStats();
+ if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); updateAdminStats(); setTimeout(function(){isLoading=false; fixMobileHeader();},1000); return;}}catch(e){}}
+ createPost(null); updateAdminStats(); setTimeout(function(){isLoading=false;},1000);
 }
 function createPost(data){
   let d=data||{text:"",photo:"",date:"📅 "+nowStr(),likes:0,liked:false,cmts:[]};
@@ -159,8 +186,14 @@ function deletePost(btn){
 }
 function submitPost(btn){
   if(!isEditing){openAdmin();return;}
+  if(btn.dataset.done=="1"){ alert("ಈಗಾಗಲೇ Save ಆಗಿದೆ ದೊರೆ!"); return; }
+  btn.dataset.done="1";
+  btn.textContent="✅ Saved!";
+  btn.style.background="#0a7a3d";
+  btn.disabled=true;
   savePosts();
   alert("Post Saved!");
+  setTimeout(function(){ btn.disabled=false; btn.dataset.done=""; btn.textContent="Submit Post"; btn.style.background=""; },3000);
 }
 function pickPostPhoto(btn){btn.closest('.post').querySelector('.post-file').click();}
 function removePostPhoto(btn){if(!confirm("Photo Delete ಮಾಡಲಾ?"))return; btn.closest('.post').querySelector('.post-photo').innerHTML=""; savePosts();}
