@@ -51,8 +51,6 @@ body.locked .plus-btn{display:none}
 body.editing .admin-stats{display:block}
 .dup-btn{display:none;width:100%;padding:10px;background:#ff9800;color:#fff;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin:5px auto;font-size:14px}
 body.editing .dup-btn{display:block}
-.del-dup-btn{display:none;width:100%;padding:10px;background:#d32f2f;color:#fff;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin:5px auto;font-size:14px}
-body.editing .del-dup-btn{display:block}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center}
 .modal.open{display:flex}
 .modal-box{background:#fff;width:90%;max-width:420px;padding:20px;border-radius:12px;text-align:center}
@@ -79,7 +77,7 @@ body.editing .del-dup-btn{display:block}
 <div class="left">
 <div class="editor-box"><div>ವೆಬ್ ಪೇಜ್ ಸಂಪಾದಕರು :</div><div style="font-weight:bold">ಚಿನ್ವತ</div><div style="font-size:14px;color:#1a4fc0">sunilvodaidea@gmail.com</div>
 <div class="my-photo-box" id="chinBox" onclick="pickPhoto('myphoto2')"><span class="add-txt">+</span><img id="preview2"></div><input type="file" id="myphoto2" accept="image/*" hidden></div></div>
-<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button><div class="admin-stats" id="adminStats">Total Posts: 0 | Total Data Used: 0 KB</div><button class="dup-btn" onclick="findDup()">🔍 Duplicate Check ಮಾಡಿ</button><button class="del-dup-btn" onclick="deleteAllDups()">🗑️ ಎಲ್ಲಾ Duplicate ಒಮ್ಮೆಲೇ ಡಿಲೀಟ್ ಮಾಡಿ</button></div>
+<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button><div class="admin-stats" id="adminStats">Total Posts: 0 | Total Data Used: 0 KB</div><button class="dup-btn" onclick="findDup()">🔍 Duplicate Check ಮಾಡಿ</button></div>
 <div class="right"><div class="r-head">ರಾಬರ್ಟ್ ಆಡಮ್ಸ್</div>
 <div class="photo-box" id="robertBox" onclick="pickPhoto('myphoto')"><span class="add-txt">+</span><img id="preview"></div><input type="file" id="myphoto" accept="image/*" hidden>
 <div class="r-head">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ</div>
@@ -127,20 +125,6 @@ function findDup(){
     else if(t) seen[t]=p;
   });
   alert(dup ? dup+" Duplicate ಸಿಕ್ತು! ಕೆಂಪು ಬಾರ್ಡರ್ ಇರೋದು ಡೂಪ್ಲಿಕೇಟ್!" : "ಡೂಪ್ಲಿಕೇಟ್ ಇಲ್ಲ ದೊರೆ! ಎಲ್ಲಾ ಬೇರೆ ಬೇರೆ!");
-}
-function deleteAllDups(){
-  let seen={}; let toDel=[];
-  document.querySelectorAll('.post').forEach(p=>{
-    let t=(p.querySelector('.new')?.innerText||"").trim().substring(0,120);
-    if(t && seen[t]){ toDel.push(p); }
-    else if(t) seen[t]=p;
-  });
-  if(!toDel.length){ alert("ಡೂಪ್ಲಿಕೇಟ್ ಇಲ್ಲ ದೊರೆ!"); return; }
-  if(!confirm(toDel.length+" ಡೂಪ್ಲಿಕೇಟ್ ಸಿಕ್ತು. ಒಂದೊಂದೇ ಇಟ್ಟು ಉಳಿದದ್ದನ್ನ ಡಿಲೀಟ್ ಮಾಡಲಾ? ಒರಿಜಿನಲ್ ಒಂದೂ ಹೋಗಲ್ಲ!")) return;
-  try{ localStorage.setItem('robertPosts_backup', localStorage.getItem('robertPosts')||""); }catch(e){}
-  toDel.forEach(p=>p.remove());
-  savePosts();
-  alert("ಆಯ್ತು ದೊರೆ! "+toDel.length+" ಡೂಪ್ಲಿಕೇಟ್ ಡಿಲೀಟ್ ಆಯ್ತು. ಈಗ "+document.querySelectorAll('.post').length+" ಒರಿಜಿನಲ್ ಪೋಸ್ಟ್ ಉಳಿದಿದೆ!");
 }
 function savePhotos(){try{localStorage.setItem('robertPhoto',document.getElementById('preview').src);localStorage.setItem('chinPhoto',document.getElementById('preview2').src);}catch(e){}}
 function loadPhotos(){
