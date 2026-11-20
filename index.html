@@ -47,10 +47,6 @@ body.editing .post-actions{display:flex}
 .cmt-box button{background:#1a4fc0;color:#fff;border:0;padding:8px 14px;border-radius:20px;cursor:pointer}
 .plus-btn{width:100%;height:52px;border-radius:10px;background:#1a4fc0;color:#fff;border:0;font-size:22px;cursor:pointer;display:block;margin:10px auto}
 body.locked .plus-btn{display:none}
-.admin-stats{display:none;text-align:center;background:#eef3ff;border:1px solid #c5d6ff;padding:10px;border-radius:10px;font-size:14px;font-weight:bold;color:#1a4fc0;margin:10px auto;line-height:1.8}
-body.editing .admin-stats{display:block}
-.dup-btn{display:none;width:100%;padding:10px;background:#ff9800;color:#fff;border:0;border-radius:10px;font-weight:bold;cursor:pointer;margin:5px auto;font-size:14px}
-body.editing .dup-btn{display:block}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;align-items:center;justify-content:center}
 .modal.open{display:flex}
 .modal-box{background:#fff;width:90%;max-width:420px;padding:20px;border-radius:12px;text-align:center}
@@ -60,15 +56,7 @@ body.editing .dup-btn{display:block}
 .btn-ok{background:#1a4fc0;color:#fff}
 .btn-cancel{background:#eee;color:#000}
 #posts{max-height:calc(100vh - 110px);overflow-y:auto;padding-right:4px}
-@media(max-width:800px){
-  .topbar{position:fixed;top:0;left:0;right:0;z-index:101}
-  .main{flex-direction:column;padding-top:var(--m-head,100px)}
-  .left,.right{width:100%}
-  .center{width:100%}
-  .center h2{position:fixed;top:var(--m-top,44px);left:0;right:0;z-index:100;background:#fff;margin:0;padding:12px 12px 10px;font-size:22px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-  #posts{max-height:none;overflow:visible;padding-right:0}
-  .post{max-height:none;overflow:visible}
-}
+@media(max-width:800px){.main{flex-direction:column}.left,.right{width:100%}#posts{max-height:none;overflow:visible}}
 </style>
 </head>
 <body class="locked">
@@ -77,14 +65,7 @@ body.editing .dup-btn{display:block}
 <div class="left">
 <div class="editor-box"><div>ವೆಬ್ ಪೇಜ್ ಸಂಪಾದಕರು :</div><div style="font-weight:bold">ಚಿನ್ವತ</div><div style="font-size:14px;color:#1a4fc0">sunilvodaidea@gmail.com</div>
 <div class="my-photo-box" id="chinBox" onclick="pickPhoto('myphoto2')"><span class="add-txt">+</span><img id="preview2"></div><input type="file" id="myphoto2" accept="image/*" hidden></div></div>
-<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2>
-<div style="text-align:center;background:linear-gradient(90deg,#fff3cd,#ffe8a8);border:1px solid #ffc107;padding:12px;border-radius:10px;margin-bottom:15px;line-height:1.8">
-<div style="font-size:16px;font-weight:bold;color:#7a5c00">🙏 ನಮ್ಮ ಸಮರ್ಪಣೆ - ನಿಮ್ಮ ಸಮಯ, ನಮ್ಮ ಸೇವೆ</div>
-<div id="publicStats" style="font-size:14px;color:#333;font-weight:bold">ಬರಹಗಳು ಲೋಡ್ ಆಗ್ತಾ ಇದೆ...</div>
-<div style="font-size:12.5px;color:#666">ಪ್ರತಿಯೊಂದು ಬರಹದ ಹಿಂದೆ ಗಂಟೆಗಟ್ಟಲೆ ಸಮಯ, ಶ್ರದ್ಧೆ, ಪ್ರೀತಿ ಇದೆ.</div>
-</div>
-<div id="liveMsg" style="display:none;text-align:center;background:#d4edda;color:#155724;padding:10px;border-radius:10px;font-weight:bold;margin:10px 0"></div>
-<div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button><div class="admin-stats" id="adminStats">Total Posts: 0 | Total Data Used: 0 KB</div><button class="dup-btn" onclick="findDup()">🔍 Duplicate Check ಮಾಡಿ</button></div>
+<div class="center"><h2>ರಾಬರ್ಟ್ ಆಡಮ್ಸ್ ಬರಹಗಳು</h2><div id="posts"></div><button class="plus-btn" onclick="addPost()">+ Add Page</button></div>
 <div class="right"><div class="r-head">ರಾಬರ್ಟ್ ಆಡಮ್ಸ್</div>
 <div class="photo-box" id="robertBox" onclick="pickPhoto('myphoto')"><span class="add-txt">+</span><img id="preview"></div><input type="file" id="myphoto" accept="image/*" hidden>
 <div class="r-head">ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ</div>
@@ -96,60 +77,18 @@ body.editing .dup-btn{display:block}
 const EDITOR_MAIL="sunilvodaidea@gmail.com";
 let isEditing=false;
 let pendingPhoto=null;
-let isLoading=true;
-function fixMobileHeader(){
-  if(window.innerWidth>800) return;
-  var top=document.querySelector('.topbar');
-  var h=document.querySelector('.center h2');
-  if(!top||!h) return;
-  var th=top.offsetHeight;
-  h.style.top=th+'px';
-  document.documentElement.style.setProperty('--m-top',th+'px');
-  document.documentElement.style.setProperty('--m-head',(th+h.offsetHeight+12)+'px');
-}
-window.addEventListener('load',fixMobileHeader);
-window.addEventListener('resize',fixMobileHeader);
 function nowStr(){return new Date().toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});}
-function updateAdminStats(){
-  let posts=document.querySelectorAll('.post');
-  let totalKB=0; let words=0;
-  posts.forEach(p=>{
-    let txt=p.querySelector('.new')?.innerHTML||"";
-    let img=p.querySelector('.post-photo img');
-    let cmts=""; p.querySelectorAll('.cmt-list div').forEach(c=>cmts+=c.textContent);
-    let size=(txt.length + cmts.length + (img?img.src.length:0));
-    totalKB += size/1024;
-    words += (p.querySelector('.new')?.innerText||"").trim().split(/\s+/).length;
-  });
-  let el=document.getElementById('adminStats');
-  if(el) el.textContent="Total Posts: "+posts.length+" | Total Data Used: "+totalKB.toFixed(1)+" KB";
-  let ps=document.getElementById('publicStats');
-  if(ps) ps.textContent=posts.length+" ಬರಹಗಳು | "+words.toLocaleString('en-IN')+" ಪದಗಳು | ನಿಮ್ಮ ಶ್ರಮ ವ್ಯರ್ಥ ಅಲ್ಲ!";
-}
-function cleanText(el){ return (el?.innerText||"").replace(/\s+/g," ").trim(); }
-function findDup(){
-  let seen={}; let dup=0;
-  document.querySelectorAll('.post').forEach(p=>{
-    let t=cleanText(p.querySelector('.new'));
-    p.style.border="1px solid #ddd";
-    if(t && t.length>20 && seen[t]){ p.style.border="3px solid red"; seen[t].style.border="3px solid red"; dup++; }
-    else if(t) seen[t]=p;
-  });
-  alert(dup ? dup+" Duplicate ಸಿಕ್ತು! ಕೆಂಪು ಬಾರ್ಡರ್ ಇರೋದು ಡೂಪ್ಲಿಕೇಟ್!" : "ಡೂಪ್ಲಿಕೇಟ್ ಇಲ್ಲ ದೊರೆ! ಎಲ್ಲಾ ಬೇರೆ ಬೇರೆ!");
-}
 function savePhotos(){try{localStorage.setItem('robertPhoto',document.getElementById('preview').src);localStorage.setItem('chinPhoto',document.getElementById('preview2').src);}catch(e){}}
 function loadPhotos(){
   let r=localStorage.getItem('robertPhoto'); if(r && r.length>100){let im=document.getElementById('preview'); im.src=r; document.getElementById('robertBox').classList.add('has-photo');}
   let c=localStorage.getItem('chinPhoto'); if(c && c.length>100){let im=document.getElementById('preview2'); im.src=c; document.getElementById('chinBox').classList.add('has-photo');}
 }
 function savePosts(){
-  if(isLoading) return;
   let arr=[]; document.querySelectorAll('.post').forEach(p=>{
     let img=p.querySelector('.post-photo img');
     arr.push({text:p.querySelector('.new').innerHTML,photo:img?img.src:"",date:p.querySelector('.post-date')?p.querySelector('.post-date').textContent:"",likes:parseInt(p.querySelector('.like-count')?.dataset.n||0),liked:p.querySelector('.like-btn')?.classList.contains('liked')||false,cmts:[...p.querySelectorAll('.cmt-list div')].map(x=>x.textContent)});
   });
   try{localStorage.setItem('robertPosts',JSON.stringify(arr));}catch(e){}
-  updateAdminStats();
   if(window.db){
     window.db.collection('robertPosts').get().then(async function(snap){
       let dels=[]; snap.forEach(function(doc){ dels.push(doc.ref.delete()); });
@@ -159,21 +98,20 @@ function savePosts(){
   }
 }
 function loadPosts(){
-  isLoading=true;
   document.getElementById('posts').innerHTML = "";
   if(!window.db){ loadLocalPosts(); return; }
   window.db.collection('robertPosts').get().then(function(snap){
-    if(snap.empty){ createPost(null); isLoading=false; return; }
-    snap.forEach(function(doc){ createPost(doc.data()); });
-    updateAdminStats();
-    setTimeout(function(){isLoading=false; fixMobileHeader();},1000);
+    if(snap.empty){ createPost(null); return; }
+    snap.forEach(function(doc){
+      createPost(doc.data());
+    });
   }).catch(function(){ loadLocalPosts(); });
 }
 function loadLocalPosts(){
  let raw=localStorage.getItem('robertPosts');
  document.getElementById('posts').innerHTML="";
- if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); updateAdminStats(); setTimeout(function(){isLoading=false; fixMobileHeader();},1000); return;}}catch(e){}}
- createPost(null); updateAdminStats(); setTimeout(function(){isLoading=false;},1000);
+ if(raw){try{let arr=JSON.parse(raw); if(arr.length){arr.forEach(d=>createPost(d)); return;}}catch(e){}}
+ createPost(null);
 }
 function createPost(data){
   let d=data||{text:"",photo:"",date:"📅 "+nowStr(),likes:0,liked:false,cmts:[]};
@@ -195,26 +133,8 @@ function deletePost(btn){
 }
 function submitPost(btn){
   if(!isEditing){openAdmin();return;}
-  let myPost = btn.closest('.post');
-  let myText = cleanText(myPost.querySelector('.new'));
-  if(!myText || myText.length < 20){ alert("ಮೊದಲು ಪೋಸ್ಟ್ ಬರೆಯಿರಿ ದೊರೆ!"); return; }
-  let isDup = false;
-  document.querySelectorAll('.post').forEach(p=>{
-    if(p === myPost) return;
-    let other = cleanText(p.querySelector('.new'));
-    if(other && other === myText) isDup = true;
-  });
-  if(isDup){ alert("⚠️ ಈ ಪೋಸ್ಟ್ ಈಗಾಗಲೇ ಇದೆ ದೊರೆ! ಮತ್ತೆ ಸೇವ್ ಆಗಲ್ಲ!"); return; }
-  if(btn.dataset.done=="1"){ alert("ಈಗಾಗಲೇ Save ಆಗಿದೆ ದೊರೆ!"); return; }
-  btn.dataset.done="1";
-  btn.textContent="✅ Saved!";
-  btn.style.background="#0a7a3d";
-  btn.disabled=true;
   savePosts();
-  let lm=document.getElementById('liveMsg');
-  if(lm){ lm.style.display="block"; lm.textContent="✅ Live! ಈ ಪೋಸ್ಟ್ ಈಗ ವೆಬ್‌ನಲ್ಲಿ ಎಲ್ಲರಿಗೂ ಕಾಣ್ತಿದೆ! Total: "+document.querySelectorAll('.post').length+" ಪೋಸ್ಟ್"; setTimeout(()=>lm.style.display="none",5000); }
-  alert("Post Saved! ನಿಮ್ಮ ಶ್ರಮ ವ್ಯರ್ಥ ಅಲ್ಲ ದೊರೆ!");
-  setTimeout(function(){ btn.disabled=false; btn.dataset.done=""; btn.textContent="Submit Post"; btn.style.background=""; },3000);
+  alert("Post Saved!");
 }
 function pickPostPhoto(btn){btn.closest('.post').querySelector('.post-file').click();}
 function removePostPhoto(btn){if(!confirm("Photo Delete ಮಾಡಲಾ?"))return; btn.closest('.post').querySelector('.post-photo').innerHTML=""; savePosts();}
@@ -237,7 +157,7 @@ function checkAdmin(){
   closeAdmin(); setLock(false);
   if(pendingPhoto){let id=pendingPhoto; pendingPhoto=null; setTimeout(()=>document.getElementById(id).click(),100);}
 }
-function setLock(lock){isEditing=!lock; document.body.className=lock?"locked":"editing"; document.getElementById('loginBtn').innerText=lock?"🔑":"🔓"; document.getElementById('loginBtn').className=lock?"":"unlocked"; updateAdminStats();}
+function setLock(lock){isEditing=!lock; document.body.className=lock?"locked":"editing"; document.getElementById('loginBtn').innerText=lock?"🔑":"🔓"; document.getElementById('loginBtn').className=lock?"":"unlocked";}
 function pickPhoto(id){
   if(!isEditing){ pendingPhoto=id; openAdmin(); return; }
   document.getElementById(id).click();
@@ -247,7 +167,8 @@ document.getElementById('myphoto').onchange=function(e){compressImage(e.target.f
 document.getElementById('myphoto2').onchange=function(e){compressImage(e.target.files[0],function(url){let im=document.getElementById('preview2'); im.src=url; document.getElementById('chinBox').classList.add('has-photo'); savePhotos();});};
 document.getElementById('adminInput').addEventListener('keydown',function(e){if(e.key==='Enter') checkAdmin();});
 loadPhotos(); loadPosts();
-  var fb1=document.createElement('script'); fb1.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js'; document.head.appendChild(fb1);
+  // --- FIREBASE START ---
+ var fb1=document.createElement('script'); fb1.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js'; document.head.appendChild(fb1);
  fb1.onload=function(){
   var fb2=document.createElement('script'); fb2.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js'; document.head.appendChild(fb2);
   fb2.onload=function(){
@@ -258,6 +179,7 @@ loadPhotos(); loadPosts();
     setTimeout(function(){ loadPosts(); },800);
   };
  };
+ // --- FIREBASE END ---
 </script>
 </body>
 </html>
